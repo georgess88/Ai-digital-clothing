@@ -1,0 +1,70 @@
+<div id="label-container"></div>
+<canvas id="p">
+</canvas>
+<br>
+<img src="clothes/1.jpg" onclick="loadImg('1.jpg')" width="200" height="300">
+<img src="clothes/2.jpg" onclick="loadImg('2.jpg')" width="200" height="300">
+<img src="clothes/3.jpg" onclick="loadImg('3.jpg')" width="200" height="300">
+<img src="clothes/4.jpg" onclick="loadImg('4.jpg')" width="200" height="300">
+<img src="clothes/5.jpg" onclick="loadImg('5.jpg')" width="200" height="300">
+<img src="clothes/6.jpg" onclick="loadImg('6.jpg')" width="200" height="300">
+<img src="clothes/7.jpg" onclick="loadImg('7.jpg')" width="200" height="300">
+<img src="clothes/8.jpg" onclick="loadImg('8.jpg')" width="200" height="300">
+<img src="clothes/9.jpg" onclick="loadImg('9.jpg')" width="200" height="300">
+<img src="clothes/10.jpg" onclick="loadImg('10.jpg')" width="200" height="300">
+<img src="clothes/11.jpg" onclick="loadImg('11.jpg')" width="200" height="300">
+<img src="clothes/12.jpg" onclick="loadImg('12.jpg')" width="200" height="300">
+<img src="clothes/13.jpg" onclick="loadImg('13.jpg')" width="200" height="300">
+<img src="clothes/14.jpg" onclick="loadImg('14.jpg')" width="200" height="300">
+<img src="clothes/15.jpg" onclick="loadImg('15.jpg')" width="200" height="300">
+<img src="clothes/16.jpg" onclick="loadImg('16.jpg')" width="200" height="300">
+<br>
+<a href="" id="m"></a>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+<script type="text/javascript">
+    init();
+    let model, labelContainer, maxPredictions;
+    var port="57082";
+
+    async function init() {
+        const modelURL = "model.json";
+        const metadataURL = "metadata.json";
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+        labelContainer = document.getElementById("label-container");
+        for (let i = 0; i < maxPredictions; i++)  // and class labels
+            labelContainer.appendChild(document.createElement("div"));
+    }
+
+    function loadImg(imgName)
+    {
+        var canvas = document.getElementById('p');
+        var ctx = canvas.getContext('2d');
+        canvas.width = 200;
+        canvas.height = 300;
+        var image = new Image();
+        image.src = "clothes/"+imgName;
+        ctx.drawImage(image,0,0,image.width,image.height,0,0,canvas.width,canvas.height);
+        predict("clothes/"+imgName);
+    }
+
+
+    async function predict(iName) {
+        const prediction = await model.predict(document.getElementById("p"));
+        var cName=prediction[0].className;
+        var cProb=prediction[0].probability.toFixed(2);
+        for (let i = 0; i < maxPredictions; i++)
+        {
+            const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+            labelContainer.childNodes[i].innerHTML = classPrediction;
+            if(prediction[i].probability.toFixed(2)>cProb)
+            {
+                cProb=prediction[i].probability.toFixed(2);
+                cName=prediction[i].className;
+            }
+        }
+        document.getElementById("m").innerHTML="see in 3d model";
+        document.getElementById("m").href="http://localhost:"+port+"/?model="+cName+"&urlString=/Predict/"+iName;
+    }
+</script>
