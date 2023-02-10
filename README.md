@@ -6,4 +6,4 @@ When you click on the image, the page will redirect you to a webgl developed usi
 
 The nicest aspect about this project is that it does not necessitate the use of a high-performance device.
 
-Note that you need to upload your model in model folder inside assets
+Note that you need to upload your model in model folder inside assets.
